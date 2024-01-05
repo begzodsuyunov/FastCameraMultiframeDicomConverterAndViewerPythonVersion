@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="0dp"
+    android:background="@color/black"
+    tools:context=".MainActivity">
+    <GridLayout
+        android:layout_width="368dp"
+        android:layout_height="495dp"
+        android:layout_margin="0dp"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:rowCount="4"
+        android:columnCount="5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Other TextViews for patient information -->
+        <TextView
+            android:id="@+id/patientNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="patientName"
+            />
+
+        <TextView
+            android:id="@+id/patientIdTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="patientName"
+            />
+
+        <TextView
+            android:id="@+id/patientSexTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="patientName"
+            />
+
+        <TextView
+            android:id="@+id/patientAgeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="patientName"
+            />
+
+        <TextView
+            android:id="@+id/patientDobTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="patientName"
+            />
+
+        <TextView
+            android:id="@+id/studyDateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="patientName"
+            />
+
+        <TextView
+            android:id="@+id/studyDescTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="patientName"
+            />
+
+        <TextView
+            android:id="@+id/seriesDateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="patientName"
+            />
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/patientNameTextView"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:textColor="@color/white"-->
+        <!--            android:text="patientName"-->
+        <!--            android:padding="4dp"/>-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/patientNameTextView"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:textColor="@color/white"-->
+        <!--            android:text="patientName"-->
+        <!--            android:padding="4dp"/>-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/patientNameTextView"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:textColor="@color/white"-->
+        <!--            android:text="patientName"-->
+        <!--            android:padding="4dp"/>-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/patientNameTextView"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:textColor="@color/white"-->
+        <!--            android:text="patientName"-->
+        <!--            android:padding="4dp"/>-->
+
+
+    </GridLayout>
+
+    <LinearLayout
+        android:layout_width="368dp"
+        android:layout_height="495dp"
+        android:layout_margin="0dp"
+        android:gravity="center_vertical|fill_vertical|center_horizontal|fill_horizontal"
+        android:orientation="vertical"
+        android:padding="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintHeight_percent="100"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="100">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:adjustViewBounds="false"
+            android:contentDescription="@string/image_description"
+            android:cropToPadding="false"
+            android:padding="0dp"
+            app:srcCompat="@color/colorPrimary" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:layout_weight="0"
+            android:contentDescription="@string/button_description"
+            android:onClick="loadDicomFileClicked"
+            android:padding="0dp"
+            android:text="@string/button_text" />
+
+        />
+    </LinearLayout>
+    <Button
+        android:id="@+id/btnPrevious"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="Previous"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <Button
+        android:id="@+id/btnNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:text="Next"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>

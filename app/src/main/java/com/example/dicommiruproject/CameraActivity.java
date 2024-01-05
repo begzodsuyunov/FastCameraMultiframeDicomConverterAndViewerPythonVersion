@@ -105,16 +105,27 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             PyObject pyo = py.getModule("yolo_module");
 
 
-            // Append a timestamp or a unique identifier to the file name
-            String timestamp = String.valueOf(System.currentTimeMillis());
-            String newFileName = "/storage/emulated/0/Download/DCMFiles/multiframe_" + timestamp + ".dcm";
 
+            // Update the directory path to point to the correct folder
+            String directoryPath = "/storage/emulated/0/Download/DCMFiles/";
+            File directory = new File(directoryPath);
+
+            // Check if the directory exists, if not, create it
+            if (!directory.exists()) {
+                if (directory.mkdirs()) {
+                    Log.d("CameraApp", "Directory created: " + directoryPath);
+                } else {
+                    Log.e("CameraApp", "Failed to create directory: " + directoryPath);
+                    showToast("Failed to create directory for DICOM files.");
+                    return;
+                }
+            }
 
 
             // Update the directory path to point to the correct folder
             PyObject obj = pyo.callAttr("create_multiframe_dicom",
                     "/storage/emulated/0/Download/DicomJpg/",  // Correct directory path
-                    "/storage/emulated/0/Download/DCMFiles/");
+                    directoryPath);
 
             if (Objects.requireNonNull(obj).toJava(String.class).equals("Success")) {
                 showToast("DICOM files merged successfully.");

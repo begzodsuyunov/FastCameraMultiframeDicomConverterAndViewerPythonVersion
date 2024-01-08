@@ -29,12 +29,14 @@ android {
 
         defaultConfig {
             ndk {
-                abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+                abiFilters "armeabi-v7a"
+//                abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
             }
 
             python {
                 version "3.8"
                 buildPython "C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python38\\python.exe"
+//                buildPython "C:\\Users\\Begzod Suyunov\\AppData\\Local\\Programs\\Python\\Python38\\python.exe"
             }
 
         }
@@ -47,13 +49,20 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    bundle{
+        language {
+            enableSplit  = false
+        }
     }
 }
 

@@ -106,7 +106,7 @@ def create_multiframe_dicom(input_folder, output_file):
     # Load each image from the JPEG files and convert them to RGB pixel arrays
     pixel_data = []
     for jpeg_file in jpeg_files:
-        image = Image.open(jpeg_file).convert('L')  # Convert to grayscale
+        image = Image.open(jpeg_file)
         pixel_array = np.array(image)
         pixel_data.append(pixel_array)
 
@@ -126,9 +126,11 @@ def create_multiframe_dicom(input_folder, output_file):
     multi_frame_dataset.HighBit = 7
     multi_frame_dataset.PixelRepresentation = 0
     # For grayscale images
-    multi_frame_dataset.SamplesPerPixel = 1
-    multi_frame_dataset.PhotometricInterpretation = 'MONOCHROME2'
+    multi_frame_dataset.SamplesPerPixel = 3  # Red, Green, Blue
+    multi_frame_dataset.PhotometricInterpretation = 'RGB'
 
+    # Set the Planar Configuration attribute to 0 (chunky)
+    multi_frame_dataset.PlanarConfiguration = 0
 
    # Add a timestamp to the output file name
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")

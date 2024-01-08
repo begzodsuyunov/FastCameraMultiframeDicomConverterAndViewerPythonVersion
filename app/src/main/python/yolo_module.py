@@ -7,6 +7,51 @@ from pydicom.encaps import encapsulate
 from pydicom.valuerep import PersonName, DA
 from datetime import datetime, timedelta
 
+
+# Initial values
+patientName = "John"
+patientId = "123123"
+patientSex = "M"
+patientAge = "23"
+patientDob = "19500101"
+patientAddress = "Tashkent"
+institutionName = "Miru"
+manufacturer = "Manu-Miru"
+manufacturerModelName = "Man-Model-Miru"
+referringPhysicianName = "Dr Employee"
+studyDate = "20100101"
+studyDescription = "Study desc"
+studyID = "123123"
+seriesDate = "20100101"
+
+def update_patient_info(updated_patient_name, updated_patient_age, updated_patient_id, updated_patient_sex, formatted_dob,
+                        updated_patient_address, updated_institution_name, updated_manufacturer,
+                        updated_manufacturer_model_name, updated_referring_physician_name, formatted_study_date,
+                        updated_study_description, updated_study_id, formatted_series_date):
+    global patientName, patientAge, patientId, patientSex, patientDob, patientAddress
+    global institutionName, manufacturer, manufacturerModelName, referringPhysicianName, studyDate, studyDescription, studyID, seriesDate
+
+    # Perform patient information update logic as needed
+
+    # Update global variables with new values
+    patientName = updated_patient_name
+    patientAge = updated_patient_age
+    patientId = updated_patient_id
+    patientSex = updated_patient_sex
+    patientDob = formatted_dob
+    patientAddress = updated_patient_address
+    institutionName = updated_institution_name
+    manufacturer = updated_manufacturer
+    manufacturerModelName = updated_manufacturer_model_name
+    referringPhysicianName = updated_referring_physician_name
+    studyDate = formatted_study_date
+    studyDescription = updated_study_description
+    studyID = updated_study_id
+    seriesDate = formatted_series_date
+
+    # Return a status message (you can customize this message based on the processing)
+    return "Patient information updated successfully"
+
 def create_multiframe_dicom(input_folder, output_file):
     # Validate input_folder
     if not os.path.exists(input_folder):
@@ -21,7 +66,6 @@ def create_multiframe_dicom(input_folder, output_file):
         for f in os.listdir(input_folder)
         if f.endswith(".jpg") and current_time - datetime.fromtimestamp(os.path.getctime(os.path.join(input_folder, f))) <= timedelta(seconds=5)
     ]
-
     # Create a new multi-frame DICOM dataset
     multi_frame_dataset = Dataset()
 
@@ -34,22 +78,29 @@ def create_multiframe_dicom(input_folder, output_file):
     multi_frame_dataset.file_meta = FileMetaDataset()
     multi_frame_dataset.file_meta.TransferSyntaxUID = ExplicitVRLittleEndian
 
+    # Referring Physician's Name
+    multi_frame_dataset.ReferringPhysicianName = referringPhysicianName
+
     # Patient information
-    multi_frame_dataset.PatientName = PersonName("Test^Patient")
-    multi_frame_dataset.PatientID = "Test Patient"
-    multi_frame_dataset.PatientSex = "M"
-    multi_frame_dataset.PatientAge = "50"
-    multi_frame_dataset.PatientBirthDate = DA("19500101")
+    multi_frame_dataset.PatientName = patientName
+    multi_frame_dataset.PatientID = patientId
+    multi_frame_dataset.PatientSex = patientSex
+    multi_frame_dataset.PatientAge = patientAge
+    multi_frame_dataset.PatientBirthDate = patientDob
+    multi_frame_dataset.PatientAddress = patientAddress  # Updated to lowercase 'address'
 
     # Study information
-    multi_frame_dataset.StudyDate = DA("20100101")
-    multi_frame_dataset.StudyTime = '001230.000000'  # Adjust the time value accordingly
-    multi_frame_dataset.StudyDescription = "Study Description"
-    multi_frame_dataset.StudyID = "123"
+    multi_frame_dataset.StudyDate = studyDate
+    multi_frame_dataset.StudyDescription = studyDescription
+    multi_frame_dataset.StudyID = studyID
+
+    # Additional patient information
+    multi_frame_dataset.InstitutionName = institutionName
+    multi_frame_dataset.Manufacturer = manufacturer
+    multi_frame_dataset.ManufacturerModelName = manufacturerModelName
 
     # Series information
-    multi_frame_dataset.SeriesDate = DA("20100101")
-    multi_frame_dataset.SeriesTime = '001230.000000'
+    multi_frame_dataset.SeriesDate = seriesDate
     multi_frame_dataset.SOPClassUID = '1.2.840.10008.5.1.4.1.1.7'
 
     # Load each image from the JPEG files and convert them to RGB pixel arrays

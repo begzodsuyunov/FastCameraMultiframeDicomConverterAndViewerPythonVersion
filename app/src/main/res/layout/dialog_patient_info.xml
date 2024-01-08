@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <EditText
+            android:id="@+id/editTextPatientName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Patient Name"/>
+
+        <EditText
+            android:id="@+id/editTextPatientId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Patient ID"/>
+
+        <EditText
+            android:id="@+id/editTextPatientSex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Patient Sex"/>
+
+        <EditText
+            android:id="@+id/editTextPatientAge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Patient Age"/>
+
+        <EditText
+            android:id="@+id/editTextPatientDob"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Patient Date of Birth"/>
+
+        <EditText
+            android:id="@+id/editTextPatientAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Patient Address"/>
+
+        <EditText
+            android:id="@+id/editTextInstitutionName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Institution Name"/>
+
+        <EditText
+            android:id="@+id/editTextManufacturer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Manufacturer"/>
+
+        <EditText
+            android:id="@+id/editTextManufacturerModelName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Manufacturer Model Name"/>
+
+        <EditText
+            android:id="@+id/editTextReferringPhysicianName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Referring Physician Name"/>
+
+        <EditText
+            android:id="@+id/editTextStudyDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Study Date"/>
+
+        <EditText
+            android:id="@+id/editTextStudyDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Study Description"/>
+
+        <EditText
+            android:id="@+id/editTextStudyID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Study ID"/>
+
+        <EditText
+            android:id="@+id/editTextSeriesDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Series Date"/>
+
+    </LinearLayout>
+</ScrollView>

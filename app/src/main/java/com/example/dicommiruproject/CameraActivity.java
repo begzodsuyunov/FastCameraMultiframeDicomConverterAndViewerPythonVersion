@@ -31,8 +31,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Objects;
 
 public class CameraActivity extends AppCompatActivity implements SurfaceHolder.Callback, android.hardware.Camera.PreviewCallback {
@@ -45,6 +48,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
     private int frameCount = 0;
+    private boolean shouldStopCapturingFrames = false;
 
     private static final int CAPTURE_DURATION = 1000;  // Duration in milliseconds
 
@@ -77,7 +81,8 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             @Override
             public void onClick(View v) {
                 // Show patient info dialog
-//                showPatientInfoDialog();
+                showUpdateDialog();
+
             }
         });
         if (!Python.isStarted()) {
@@ -105,7 +110,6 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             // Permission already granted, proceed with file operations
             Python py = Python.getInstance();
             PyObject pyo = py.getModule("yolo_module");
-
 
 
             // Update the directory path to point to the correct folder
@@ -162,6 +166,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
     private void captureFrames() {
         frameCount = 0; // Reset frame count
+        shouldStopCapturingFrames = false; // Reset the flag
 
         // Schedule the first frame capture immediately
         handlerFrame.postDelayed(new Runnable() {
@@ -177,34 +182,41 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             public void run() {
                 stopCapturingFrames();
             }
-        }, 1050);
+        }, 900);
     }
 
     private void captureFrameAndScheduleNext() {
-        // Capture frame
-        camera.setOneShotPreviewCallback(new android.hardware.Camera.PreviewCallback() {
-            @Override
-            public void onPreviewFrame(byte[] data, android.hardware.Camera camera) {
-                saveFrame(data);
-            }
-        });
+        // Check the flag before capturing the frame
+        if (!shouldStopCapturingFrames) {
+            // Capture frame
+            camera.setOneShotPreviewCallback(new android.hardware.Camera.PreviewCallback() {
+                @Override
+                public void onPreviewFrame(byte[] data, android.hardware.Camera camera) {
+                    saveFrame(data);
+                }
+            });
 
-        // Schedule the next frame capture with a consistent delay of 45ms
-        handlerFrame.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                captureFrameAndScheduleNext();
-            }
-        }, 45);
+            // Schedule the next frame capture with a consistent delay of 45ms
+            handlerFrame.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    captureFrameAndScheduleNext();
+                }
+            }, 45);
+        }
     }
+
     private void stopCapturingFrames() {
         // Stop capturing frames or perform any necessary cleanup
+        shouldStopCapturingFrames = true;
+
         // In this case, you can stop the continuous capture by removing the callbacks
         handlerFrame.removeCallbacksAndMessages(null);
 
         // You may also want to trigger any further processing here, like merging DICOM files
         mergeDicomFiles();
     }
+
     private void saveFrame(byte[] data) {
         // Save frame to a file in the specified location
         File mediaStorageDirJpg = new File(Environment.getExternalStorageDirectory(), "/Download/DicomJpg");
@@ -274,103 +286,97 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        camera.stopPreview();
-        camera = null;
+        if (camera != null) {
+            camera.stopPreview();
+            camera.release();
+            camera = null;
+        }
     }
 
 
+    private void updatePatientInfo(String patientName, String patientAge, String patientId, String patientSex,
+                                   String formattedDob, String patientAddress, String institutionName,
+                                   String manufacturer, String manufacturerModelName, String referringPhysicianName,
+                                   String formattedStudyDate, String studyDescription, String studyID,
+                                   String formattedSeriesDate) {
+        Python py = Python.getInstance();
+        PyObject pyo = py.getModule("yolo_module"); // Replace with your Python module name
 
-//    private void showPatientInfoDialog() {
-//        // Create a dialog builder
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setTitle("Patient Information");
-//
-//        // Inflate the layout for the dialog
-//        View view = getLayoutInflater().inflate(R.layout.dialog_patient_info, null);
-//        builder.setView(view);
-//
-//        // Get references to the EditText fields in the dialog
-//        EditText patientNameEditText = view.findViewById(R.id.editTextPatientName);
-//        EditText patientIdEditText = view.findViewById(R.id.editTextPatientId);
-//        EditText patientSexEditText = view.findViewById(R.id.editTextPatientSex);
-//        EditText patientAgeEditText = view.findViewById(R.id.editTextPatientAge);
-//        EditText patientDobEditText = view.findViewById(R.id.editTextPatientDob);
-//        EditText patientAddressEditText = view.findViewById(R.id.editTextPatientAddress);
-//        EditText institutionNameEditText = view.findViewById(R.id.editTextInstitutionName);
-//        EditText manufacturerEditText = view.findViewById(R.id.editTextManufacturer);
-//        EditText manufacturerModelNameEditText = view.findViewById(R.id.editTextManufacturerModelName);
-//        EditText referringPhysicianNameEditText = view.findViewById(R.id.editTextReferringPhysicianName);
-//        EditText studyDateEditText = view.findViewById(R.id.editTextStudyDate);
-//        EditText studyDescriptionEditText = view.findViewById(R.id.editTextStudyDescription);
-//        EditText studyIDEditText = view.findViewById(R.id.editTextStudyID);
-//        EditText seriesDateEditText = view.findViewById(R.id.editTextSeriesDate);
-//
-//
-//        // Set default values to the EditText fields
-//        patientNameEditText.setText(DicomService.getPatientName());
-//        patientIdEditText.setText(DicomService.getPatientId());
-//        patientSexEditText.setText(DicomService.getPatientSex());
-//        patientAgeEditText.setText(DicomService.getPatientAge());
-//        patientDobEditText.setText(DicomService.getPatientBirthDate());
-//        patientAddressEditText.setText(DicomService.getPatientAddress());
-//        institutionNameEditText.setText(DicomService.getInstitutionName());
-//        manufacturerEditText.setText(DicomService.getManufacturer());
-//        manufacturerModelNameEditText.setText(DicomService.getManufacturerModelName());
-//        referringPhysicianNameEditText.setText(DicomService.getReferringPhysicianName());
-//        studyDateEditText.setText(DicomService.getStudyDate());
-//        studyDescriptionEditText.setText(DicomService.getStudyDescription());
-//        studyIDEditText.setText(DicomService.getStudyID());
-//        seriesDateEditText.setText(DicomService.getSeriesDate());
-//
-//        // Set positive button click listener
-//        builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                // Get updated values from the EditText fields
-//                String updatedPatientName = patientNameEditText.getText().toString();
-//                String updatedPatientId = patientIdEditText.getText().toString();
-//                String updatedPatientSex = patientSexEditText.getText().toString();
-//                String updatedPatientAge = patientAgeEditText.getText().toString();
-//                String updatedPatientDob = patientDobEditText.getText().toString();
-//                String updatedPatientAddress = patientAddressEditText.getText().toString();
-//                String updatedInstitutionName = institutionNameEditText.getText().toString();
-//                String updatedManufacturer = manufacturerEditText.getText().toString();
-//                String updatedManufacturerModelName = manufacturerModelNameEditText.getText().toString();
-//                String updatedReferringPhysicianName = referringPhysicianNameEditText.getText().toString();
-//                String updatedStudyDate = studyDateEditText.getText().toString();
-//                String updatedStudyDescription = studyDescriptionEditText.getText().toString();
-//                String updatedStudyID = studyIDEditText.getText().toString();
-//                String updatedSeriesDate = seriesDateEditText.getText().toString();
-//
-//                // Pass the updated values to DicomService
-//                DicomService.setPatientName(updatedPatientName);
-//                DicomService.setPatientId(updatedPatientId);
-//                DicomService.setPatientSex(updatedPatientSex);
-//                DicomService.setPatientAge(updatedPatientAge);
-//                DicomService.setPatientBirthDate(updatedPatientDob);
-//                DicomService.setPatientAddress(updatedPatientAddress);
-//                DicomService.setInstitutionName(updatedInstitutionName);
-//                DicomService.setManufacturer(updatedManufacturer);
-//                DicomService.setManufacturerModelName(updatedManufacturerModelName);
-//                DicomService.setReferringPhysicianName(updatedReferringPhysicianName);
-//                DicomService.setStudyDate(updatedStudyDate);
-//                DicomService.setStudyDescription(updatedStudyDescription);
-//                DicomService.setStudyID(updatedStudyID);
-//                DicomService.setSeriesDate(updatedSeriesDate);
-//
-//                // Continue with frame capture or any other logic
-//            }
-//        });
-//
-//        // Set negative button click listener
-//        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                // Handle cancel action if needed
-//            }
-//        });
-//
-//        // Show the dialog
-//        builder.create().show();
-//    }
+        // Call your Python function to update patient information
+        PyObject resultUpdate = pyo.callAttr("update_patient_info", patientName, patientAge, patientId, patientSex,
+                formattedDob, patientAddress, institutionName, manufacturer, manufacturerModelName,
+                referringPhysicianName, formattedStudyDate, studyDescription, studyID, formattedSeriesDate);
+
+        // Get the result message from the update function
+        String resultMessageUpdate = resultUpdate.toJava(String.class);
+
+        // Show a toast message based on the result of updating patient information
+        showToast(resultMessageUpdate);
+    }
+
+    private void showUpdateDialog() {
+        // Create a dialog with two EditText fields
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Update Patient Information");
+
+        // Set up the layout for the dialog
+        View view = getLayoutInflater().inflate(R.layout.dialog_patient_info, null);
+        builder.setView(view);
+
+        EditText patientNameEditText = view.findViewById(R.id.editTextPatientName);
+        EditText patientIdEditText = view.findViewById(R.id.editTextPatientId);
+        EditText patientSexEditText = view.findViewById(R.id.editTextPatientSex);
+        EditText patientAgeEditText = view.findViewById(R.id.editTextPatientAge);
+        EditText patientDobEditText = view.findViewById(R.id.editTextPatientDob);
+        EditText patientAddressEditText = view.findViewById(R.id.editTextPatientAddress);
+        EditText institutionNameEditText = view.findViewById(R.id.editTextInstitutionName);
+        EditText manufacturerEditText = view.findViewById(R.id.editTextManufacturer);
+        EditText manufacturerModelNameEditText = view.findViewById(R.id.editTextManufacturerModelName);
+        EditText referringPhysicianNameEditText = view.findViewById(R.id.editTextReferringPhysicianName);
+        EditText studyDateEditText = view.findViewById(R.id.editTextStudyDate);
+        EditText studyDescriptionEditText = view.findViewById(R.id.editTextStudyDescription);
+        EditText studyIDEditText = view.findViewById(R.id.editTextStudyID);
+        EditText seriesDateEditText = view.findViewById(R.id.editTextSeriesDate);
+
+
+        // Set up the positive button to update patient information
+        builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Get the values from the EditText fields
+                String updatedPatientName = patientNameEditText.getText().toString();
+                String updatedPatientId = patientIdEditText.getText().toString();
+                String updatedPatientSex = patientSexEditText.getText().toString();
+                String updatedPatientAge = patientAgeEditText.getText().toString();
+                String updatedPatientDob = patientDobEditText.getText().toString();
+                String updatedPatientAddress = patientAddressEditText.getText().toString();
+                String updatedInstitutionName = institutionNameEditText.getText().toString();
+                String updatedManufacturer = manufacturerEditText.getText().toString();
+                String updatedManufacturerModelName = manufacturerModelNameEditText.getText().toString();
+                String updatedReferringPhysicianName = referringPhysicianNameEditText.getText().toString();
+                String updatedStudyDate = studyDateEditText.getText().toString();
+                String updatedStudyDescription = studyDescriptionEditText.getText().toString();
+                String updatedStudyID = studyIDEditText.getText().toString();
+                String updatedSeriesDate = seriesDateEditText.getText().toString();
+
+
+                updatePatientInfo(updatedPatientName, updatedPatientAge, updatedPatientId, updatedPatientSex, updatedPatientDob, updatedPatientAddress, updatedInstitutionName,
+                        updatedManufacturer, updatedManufacturerModelName, updatedReferringPhysicianName,
+                        updatedStudyDate, updatedStudyDescription, updatedStudyID, updatedSeriesDate);
+            }
+        });
+
+        // Set up the negative button to cancel the dialog
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Dismiss the dialog
+                dialog.dismiss();
+            }
+        });
+
+        // Show the dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 }

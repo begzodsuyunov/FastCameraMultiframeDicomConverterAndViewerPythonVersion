@@ -8,7 +8,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.tiny_yolo"
+        applicationId "com.example.dicommiruproject"
 
         python{
             pip{

@@ -5,16 +5,22 @@ from pydicom.dataset import Dataset, FileMetaDataset
 from pydicom.uid import UID, ExplicitVRLittleEndian
 from pydicom.encaps import encapsulate
 from pydicom.valuerep import PersonName, DA
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def create_multiframe_dicom(input_folder, output_file):
     # Validate input_folder
     if not os.path.exists(input_folder):
         raise FileNotFoundError(f"Directory not found: {input_folder}")
 
-    # Define the paths to the JPEG files and select the latest 5 files
-    jpeg_files = sorted([os.path.join(input_folder, f) for f in os.listdir(input_folder) if f.endswith(".jpg")],
-                        key=lambda x: os.path.getmtime(x), reverse=True)[:5]
+    # Get the current time
+    current_time = datetime.now()
+
+    # Define the paths to the JPEG files and select the files created within the last 5 seconds
+    jpeg_files = [
+        os.path.join(input_folder, f)
+        for f in os.listdir(input_folder)
+        if f.endswith(".jpg") and current_time - datetime.fromtimestamp(os.path.getctime(os.path.join(input_folder, f))) <= timedelta(seconds=5)
+    ]
 
     # Create a new multi-frame DICOM dataset
     multi_frame_dataset = Dataset()

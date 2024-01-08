@@ -46,6 +46,8 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     private SurfaceHolder surfaceHolder;
     private int frameCount = 0;
 
+    private static final int CAPTURE_DURATION = 1000;  // Duration in milliseconds
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -162,40 +164,47 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         frameCount = 0; // Reset frame count
 
         // Schedule the first frame capture immediately
-        handlerFrame.post(new Runnable() {
+        handlerFrame.postDelayed(new Runnable() {
             @Override
             public void run() {
                 captureFrameAndScheduleNext();
             }
-        });
+        }, 0);
+
+        // Schedule a task to stop capturing frames after 1000ms
+        handlerFrame.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                stopCapturingFrames();
+            }
+        }, 1050);
     }
 
     private void captureFrameAndScheduleNext() {
-        if (frameCount < 5) {
-            // Capture frame and increment count
-            camera.setOneShotPreviewCallback(new android.hardware.Camera.PreviewCallback() {
-                @Override
-                public void onPreviewFrame(byte[] data, android.hardware.Camera camera) {
-                    saveFrame(data);
+        // Capture frame
+        camera.setOneShotPreviewCallback(new android.hardware.Camera.PreviewCallback() {
+            @Override
+            public void onPreviewFrame(byte[] data, android.hardware.Camera camera) {
+                saveFrame(data);
+            }
+        });
 
-                    if (frameCount == 5) {
-                        // Start DICOM conversion after capturing the last frame
-                        mergeDicomFiles();
-                    }
-                }
-            });
-            frameCount++;
-
-            // Schedule the next frame capture with a consistent delay of 100ms
-            handlerFrame.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    captureFrameAndScheduleNext();
-                }
-            }, 45);
-        }
+        // Schedule the next frame capture with a consistent delay of 45ms
+        handlerFrame.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                captureFrameAndScheduleNext();
+            }
+        }, 45);
     }
+    private void stopCapturingFrames() {
+        // Stop capturing frames or perform any necessary cleanup
+        // In this case, you can stop the continuous capture by removing the callbacks
+        handlerFrame.removeCallbacksAndMessages(null);
 
+        // You may also want to trigger any further processing here, like merging DICOM files
+        mergeDicomFiles();
+    }
     private void saveFrame(byte[] data) {
         // Save frame to a file in the specified location
         File mediaStorageDirJpg = new File(Environment.getExternalStorageDirectory(), "/Download/DicomJpg");

@@ -33,21 +33,21 @@ def update_patient_info(updated_patient_name, updated_patient_age, updated_patie
 
     # Perform patient information update logic as needed
 
-    # Update global variables with new values
-    patientName = updated_patient_name
-    patientAge = updated_patient_age
-    patientId = updated_patient_id
-    patientSex = updated_patient_sex
-    patientDob = formatted_dob
-    patientAddress = updated_patient_address
-    institutionName = updated_institution_name
-    manufacturer = updated_manufacturer
-    manufacturerModelName = updated_manufacturer_model_name
-    referringPhysicianName = updated_referring_physician_name
-    studyDate = formatted_study_date
-    studyDescription = updated_study_description
-    studyID = updated_study_id
-    seriesDate = formatted_series_date
+    # Check each field and assign default values if empty
+    patientName = updated_patient_name if updated_patient_name else "John"
+    patientAge = updated_patient_age if updated_patient_age else "23"
+    patientId = updated_patient_id if updated_patient_id else "123123"
+    patientSex = updated_patient_sex if updated_patient_sex else "M"
+    patientDob = formatted_dob if formatted_dob else "19500101"
+    patientAddress = updated_patient_address if updated_patient_address else "Tashkent"
+    institutionName = updated_institution_name if updated_institution_name else "Miru"
+    manufacturer = updated_manufacturer if updated_manufacturer else "Manu-Miru"
+    manufacturerModelName = updated_manufacturer_model_name if updated_manufacturer_model_name else "Man-Model-Miru"
+    referringPhysicianName = updated_referring_physician_name if updated_referring_physician_name else "Dr Employee"
+    studyDate = formatted_study_date if formatted_study_date else "20100101"
+    studyDescription = updated_study_description if updated_study_description else "Study desc"
+    studyID = updated_study_id if updated_study_id else "123123"
+    seriesDate = formatted_series_date if formatted_series_date else "20100101"
 
     # Return a status message (you can customize this message based on the processing)
     return "Patient information updated successfully"

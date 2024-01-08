@@ -14,6 +14,7 @@ import android.graphics.YuvImage;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -51,7 +52,8 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     private boolean shouldStopCapturingFrames = false;
 
     private static final int CAPTURE_DURATION = 1000;  // Duration in milliseconds
-
+    private HandlerThread frameCaptureThread;
+    private Handler frameCaptureHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -167,9 +169,15 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     private void captureFrames() {
         frameCount = 0; // Reset frame count
         shouldStopCapturingFrames = false; // Reset the flag
+// Create a new HandlerThread for frame capturing
+        frameCaptureThread = new HandlerThread("FrameCaptureThread");
+        frameCaptureThread.start();
 
+        // Get the handler from the new thread
+        frameCaptureHandler = new Handler(frameCaptureThread.getLooper());
         // Schedule the first frame capture immediately
-        handlerFrame.postDelayed(new Runnable() {
+// Schedule the first frame capture immediately
+        frameCaptureHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 captureFrameAndScheduleNext();
@@ -177,12 +185,31 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         }, 0);
 
         // Schedule a task to stop capturing frames after 1000ms
-        handlerFrame.postDelayed(new Runnable() {
+        // Schedule a task to stop capturing frames after 1000ms
+        frameCaptureHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 stopCapturingFrames();
             }
         }, 900);
+    }
+    private void stopFrameCaptureThread() {
+        shouldStopCapturingFrames = true;
+
+        // Cleanup and stop the frame capture thread
+        if (frameCaptureHandler != null) {
+            frameCaptureHandler.removeCallbacksAndMessages(null);
+        }
+
+        if (frameCaptureThread != null) {
+            frameCaptureThread.quitSafely();
+            try {
+                // Ensure that the thread is properly terminated before moving forward
+                frameCaptureThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void captureFrameAndScheduleNext() {
@@ -197,12 +224,12 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             });
 
             // Schedule the next frame capture with a consistent delay of 45ms
-            handlerFrame.postDelayed(new Runnable() {
+            frameCaptureHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     captureFrameAndScheduleNext();
                 }
-            }, 45);
+            }, 65);
         }
     }
 
@@ -210,12 +237,26 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         // Stop capturing frames or perform any necessary cleanup
         shouldStopCapturingFrames = true;
 
-        // In this case, you can stop the continuous capture by removing the callbacks
-        handlerFrame.removeCallbacksAndMessages(null);
+        // Cleanup and stop the frame capture thread
+        if (frameCaptureHandler != null) {
+            frameCaptureHandler.removeCallbacksAndMessages(null);
+            frameCaptureHandler.getLooper().quitSafely();
+            mergeDicomFiles();
+        }
 
-        // You may also want to trigger any further processing here, like merging DICOM files
-        mergeDicomFiles();
+        if (frameCaptureThread != null) {
+            try {
+                // Ensure that the thread is properly terminated before moving forward
+                frameCaptureThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
     }
+
+
 
     private void saveFrame(byte[] data) {
         // Save frame to a file in the specified location

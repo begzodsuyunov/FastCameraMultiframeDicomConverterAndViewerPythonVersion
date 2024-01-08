@@ -113,21 +113,42 @@ public class DiagnoseActivity extends AppCompatActivity {
 
     }
     private void showNextFrame() {
-        if (currentFrameIndex < 5 - 1) {
-            currentFrameIndex++;
-            updateImageView();
+        if (loadDataSet != null) {
+            // Get the total number of frames from the DICOM dataset
+            int totalFrames = loadDataSet.getInt8(new TagId(0x0028, 0x0008), 0);
+
+            // Ensure the current frame index is within bounds
+            currentFrameIndex = Math.min(Math.max(currentFrameIndex, 0), totalFrames - 1);
+
+            if (currentFrameIndex < totalFrames - 1) {
+                currentFrameIndex++;
+                updateImageView();
+            }
         }
     }
 
+
     private void showPreviousFrame() {
-        if (currentFrameIndex > 0) {
-            currentFrameIndex--;
-            updateImageView();
+        if (loadDataSet != null) {
+            // Get the total number of frames from the DICOM dataset
+            int totalFrames = loadDataSet.getInt8(new TagId(0x0028, 0x0008), 0);
+
+            // Ensure the current frame index is within bounds
+            currentFrameIndex = Math.min(Math.max(currentFrameIndex, 0), totalFrames - 1);
+
+            if (currentFrameIndex > 0) {
+                currentFrameIndex--;
+                updateImageView();
+            }
         }
     }
 
     private void updateImageView() {
         // Retrieve the image for the current frame
+
+        int totalFrames = loadDataSet.getInt8(new TagId(0x0028, 0x0008), 0);
+        currentFrameIndex = Math.min(Math.max(currentFrameIndex, 0), totalFrames - 1);
+
         Image dicomImage = loadDataSet.getImageApplyModalityTransform(currentFrameIndex);
 
         // Use a DrawBitmap to build a stream of bytes that can be handled by the

@@ -3,8 +3,6 @@ import numpy as np
 from PIL import Image
 from pydicom.dataset import Dataset, FileMetaDataset
 from pydicom.uid import UID, ExplicitVRLittleEndian
-from pydicom.encaps import encapsulate
-from pydicom.valuerep import PersonName, DA
 from datetime import datetime, timedelta
 
 
@@ -132,7 +130,7 @@ def create_multiframe_dicom(input_folder, output_file):
     # Set the Planar Configuration attribute to 0 (chunky)
     multi_frame_dataset.PlanarConfiguration = 0
 
-   # Add a timestamp to the output file name
+    # Add a timestamp to the output file name
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     output_file = os.path.join(output_file, f"multiframe_{timestamp}.dcm")
 

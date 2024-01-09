@@ -105,7 +105,9 @@ def create_multiframe_dicom(input_folder, output_file):
     pixel_data = []
     for jpeg_file in jpeg_files:
         image = Image.open(jpeg_file)
-        pixel_array = np.array(image)
+        # Rotate the image by 90 degrees clockwise
+        rotated_image = image.rotate(-90, expand=True)  # Use expand=True to resize the bounding box
+        pixel_array = np.array(rotated_image)
         pixel_data.append(pixel_array)
 
 

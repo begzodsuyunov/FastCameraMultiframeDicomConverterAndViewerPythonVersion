@@ -10,6 +10,14 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Patient Information -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Patient Information"
+            android:textStyle="bold"
+            android:textSize="18sp"/>
+
         <EditText
             android:id="@+id/editTextPatientName"
             android:layout_width="match_parent"
@@ -22,11 +30,26 @@
             android:layout_height="wrap_content"
             android:hint="Patient ID"/>
 
-        <EditText
-            android:id="@+id/editTextPatientSex"
+        <!-- Gender -->
+        <RadioGroup
+            android:id="@+id/radioGroupSex"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Patient Sex"/>
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radioButtonMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Male"
+                android:checked="true"/>
+
+            <RadioButton
+                android:id="@+id/radioButtonFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Female"/>
+        </RadioGroup>
 
         <EditText
             android:id="@+id/editTextPatientAge"
@@ -38,13 +61,22 @@
             android:id="@+id/editTextPatientDob"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Patient Date of Birth"/>
+            android:hint="Patient DoB"/>
+
 
         <EditText
             android:id="@+id/editTextPatientAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Patient Address"/>
+
+        <!-- Study Information -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Study Information"
+            android:textStyle="bold"
+            android:textSize="18sp"/>
 
         <EditText
             android:id="@+id/editTextInstitutionName"

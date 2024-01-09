@@ -150,7 +150,6 @@
             app:zoomage_translatable="true"
             app:zoomage_minScale="0.6"
             app:zoomage_maxScale="8"
-            android:rotation="90"
             />
 <!--        <ImageView-->
 <!--            android:id="@+id/imageView"-->

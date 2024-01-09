@@ -22,6 +22,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
@@ -44,6 +45,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     private static final int PERMISSION_REQUEST_CODE = 1;
 
     final Handler handlerFrame = new Handler(Looper.getMainLooper());
+    private String selectedGender = "";
 
     private android.hardware.Camera camera;
     private SurfaceView surfaceView;
@@ -390,7 +392,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
         EditText patientNameEditText = view.findViewById(R.id.editTextPatientName);
         EditText patientIdEditText = view.findViewById(R.id.editTextPatientId);
-        EditText patientSexEditText = view.findViewById(R.id.editTextPatientSex);
+        RadioGroup radioGroupSex = view.findViewById(R.id.radioGroupSex);
         EditText patientAgeEditText = view.findViewById(R.id.editTextPatientAge);
         EditText patientDobEditText = view.findViewById(R.id.editTextPatientDob);
         EditText patientAddressEditText = view.findViewById(R.id.editTextPatientAddress);
@@ -403,7 +405,23 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         EditText studyIDEditText = view.findViewById(R.id.editTextStudyID);
         EditText seriesDateEditText = view.findViewById(R.id.editTextSeriesDate);
 
+        selectedGender = "Male"; // You can set a default value if needed
 
+        radioGroupSex.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                // Check which radio button is selected
+                switch (checkedId) {
+                    case R.id.radioButtonMale:
+                        selectedGender = "Male";
+                        break;
+                    case R.id.radioButtonFemale:
+                        selectedGender = "Female";
+                        break;
+                    // Add more cases if needed
+                }
+            }
+        });
         // Set up the positive button to update patient information
         builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
             @Override
@@ -411,7 +429,6 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 // Get the values from the EditText fields
                 String updatedPatientName = patientNameEditText.getText().toString();
                 String updatedPatientId = patientIdEditText.getText().toString();
-                String updatedPatientSex = patientSexEditText.getText().toString();
                 String updatedPatientAge = patientAgeEditText.getText().toString();
                 String updatedPatientDob = patientDobEditText.getText().toString();
                 String updatedPatientAddress = patientAddressEditText.getText().toString();
@@ -425,7 +442,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 String updatedSeriesDate = seriesDateEditText.getText().toString();
 
 
-                updatePatientInfo(updatedPatientName, updatedPatientAge, updatedPatientId, updatedPatientSex, updatedPatientDob, updatedPatientAddress, updatedInstitutionName,
+                updatePatientInfo(updatedPatientName, updatedPatientAge, updatedPatientId, selectedGender, updatedPatientDob, updatedPatientAddress, updatedInstitutionName,
                         updatedManufacturer, updatedManufacturerModelName, updatedReferringPhysicianName,
                         updatedStudyDate, updatedStudyDescription, updatedStudyID, updatedSeriesDate);
             }

@@ -118,6 +118,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             String directoryPath = "/storage/emulated/0/Download/DCMFiles/";
             File directory = new File(directoryPath);
 
+
             // Check if the directory exists, if not, create it
             if (!directory.exists()) {
                 if (directory.mkdirs()) {
@@ -137,12 +138,35 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
             if (Objects.requireNonNull(obj).toJava(String.class).equals("Success")) {
                 showToast("DICOM files merged successfully.");
+                // Update the directory path to point to the correct folder
+                String directoryJpgPath = "/storage/emulated/0/Download/DicomJpg/";
+                File directoryJpg = new File(directoryJpgPath);
+                // Clear all images from the folder after conversion
+                clearFolder(directoryJpg);
+
             } else {
                 showToast("Error merging DICOM files.");
             }
         }
     }
 
+    private void clearFolder(File folder) {
+        if (folder != null && folder.isDirectory()) {
+            File[] files = folder.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isFile()) {
+                        // Delete each file
+                        if (file.delete()) {
+                            Log.d("CameraApp", "File deleted: " + file.getAbsolutePath());
+                        } else {
+                            Log.e("CameraApp", "Failed to delete file: " + file.getAbsolutePath());
+                        }
+                    }
+                }
+            }
+        }
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

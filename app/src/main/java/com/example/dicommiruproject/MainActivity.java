@@ -23,6 +23,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
     ImageButton diagnose;
     ImageButton camera;
+    ImageButton dicomList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +39,11 @@ public class MainActivity extends AppCompatActivity {
 
         diagnose = findViewById(R.id.diagnose);
         camera = findViewById(R.id.cameraOpen);
+        dicomList = findViewById(R.id.listDicom);
 
         diagnose.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), DiagnoseActivity.class);
             startActivity(intent);
-
             overridePendingTransition(0, 0);
 
         });
@@ -54,5 +55,12 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
+
+        dicomList.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), FileListActivity.class);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+
+        });
     }
 }

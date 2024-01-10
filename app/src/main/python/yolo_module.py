@@ -133,7 +133,7 @@ def create_multiframe_dicom(input_folder, output_file):
     multi_frame_dataset.PlanarConfiguration = 0
 
     # Add a timestamp to the output file name
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     output_file = os.path.join(output_file, f"multiframe_{timestamp}.dcm")
 
     # Save the merged DICOM file

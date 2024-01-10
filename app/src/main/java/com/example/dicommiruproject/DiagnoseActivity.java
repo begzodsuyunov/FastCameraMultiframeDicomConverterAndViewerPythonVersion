@@ -1,5 +1,7 @@
 package com.example.dicommiruproject;
 
+import static android.view.View.GONE;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -26,6 +28,7 @@ import com.dicomhero.api.TagId;
 import com.dicomhero.api.TransformsChain;
 import com.dicomhero.api.VOILUT;
 import com.dicomhero.api.drawBitmapType_t;
+import com.example.dicommiruproject.util.DcmFile;
 import com.example.dicommiruproject.util.PushToDicomheroPipe;
 
 import java.io.IOException;
@@ -39,6 +42,7 @@ public class DiagnoseActivity extends AppCompatActivity {
     private int currentFrameIndex = 0; // Maintain the current frame index
     private Button btnNext;
     private Button btnPrevious;
+    private Button btnLoad;
     private DataSet loadDataSet; // Declare loadDataSet at the class level
 
     private TextView patientNameTextView;
@@ -49,7 +53,6 @@ public class DiagnoseActivity extends AppCompatActivity {
     private TextView studyDateTextView;
     private TextView studyDescTextView;
     private TextView seriesDateTextView;
-    private TextView seriesTimeTextView;
 
     /*
 
@@ -83,6 +86,7 @@ public class DiagnoseActivity extends AppCompatActivity {
 
         btnPrevious = findViewById(R.id.btnPrevious);
         btnNext = findViewById(R.id.btnNext);
+        btnLoad = findViewById(R.id.button);
 
 
         patientNameTextView = findViewById(R.id.patientNameTextView);
@@ -94,6 +98,16 @@ public class DiagnoseActivity extends AppCompatActivity {
         studyDescTextView = findViewById(R.id.studyDescTextView);
         seriesDateTextView = findViewById(R.id.seriesDateTextView);
 
+        Intent intent = getIntent();
+        if (intent != null) {
+            DcmFile selectedDcmFile = (DcmFile) intent.getSerializableExtra("selected_dcm_file");
+            if (selectedDcmFile != null) {
+                // Do something with the selected DICOM file
+                Uri fileUri = selectedDcmFile.getUri();
+                // Now you can use fileUri as needed.
+                listDicom(selectedDcmFile);
+            }
+        }
 
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,6 +141,52 @@ public class DiagnoseActivity extends AppCompatActivity {
         }
     }
 
+    private void listDicom(DcmFile selectedDcmFile) {
+        try {
+            btnLoad.setVisibility(GONE);
+            // Set the maximum image size
+            CodecFactory.setMaximumImageSize(8000, 8000);
+
+            InputStream stream;
+
+            // Check if selectedDcmFile is not null
+            if (selectedDcmFile != null) {
+                // If selectedDcmFile is not null, open an InputStream using its URI
+                stream = getContentResolver().openInputStream(selectedDcmFile.getUri());
+            } else {
+                // If selectedDcmFile is null, retrieve the URI from the Intent
+                Uri selectedfile = getIntent().getData();
+
+                // Check if the URI is not null
+                if (selectedfile == null) {
+                    return;
+                }
+
+                // Open an InputStream using the URI
+                stream = getContentResolver().openInputStream(selectedfile);
+            }
+
+            // Create a PipeStream for DICOM processing
+            PipeStream dicomheroPipe = new PipeStream(32000);
+
+            // Create a separate thread to push the InputStream to the DICOM codec
+            Thread pushThread = new Thread(new PushToDicomheroPipe(dicomheroPipe, stream));
+            pushThread.start();
+
+            // Load the DICOM dataset from the PipeStream
+            loadDataSet = CodecFactory.load(new StreamReader(dicomheroPipe.getStreamInput()));
+
+            // Set the current frame index to 0
+            currentFrameIndex = 0;
+
+            // Update the image view and text views
+            updateImageView();
+            updateTextViews();
+        } catch (IOException e) {
+            // Handle any IOException that might occur
+            e.printStackTrace();
+        }
+    }
 
     private void showPreviousFrame() {
         if (loadDataSet != null) {
@@ -192,6 +252,7 @@ public class DiagnoseActivity extends AppCompatActivity {
         if (requestCode == 123 && resultCode == RESULT_OK) {
             try {
                 CodecFactory.setMaximumImageSize(8000, 8000);
+                DcmFile selectedDcmFile = (DcmFile) data.getSerializableExtra("selected_dcm_file");
 
                 Uri selectedfile = data.getData();
                 if (selectedfile == null) {
@@ -259,5 +320,10 @@ public class DiagnoseActivity extends AppCompatActivity {
 
         // Remove the transition animation
         overridePendingTransition(0, 0);
+        // Set result to indicate success
+        setResult(RESULT_OK);
+
+        // Finish DiagnoseActivity
+        finish();
     }
 }

@@ -461,4 +461,33 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+    private void releaseCamera() {
+        if (camera != null) {
+            camera.stopPreview();
+            camera.setPreviewCallback(null);
+            camera.release();
+            camera = null;
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        releaseCamera();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        releaseCamera();
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        // Remove the transition animation
+        overridePendingTransition(0, 0);
+    }
 }

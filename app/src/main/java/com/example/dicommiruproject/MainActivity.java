@@ -23,7 +23,6 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
     ImageButton diagnose;
     ImageButton camera;
-    ImageButton finish;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,21 +38,21 @@ public class MainActivity extends AppCompatActivity {
 
         diagnose = findViewById(R.id.diagnose);
         camera = findViewById(R.id.cameraOpen);
-        finish = findViewById(R.id.exit);
 
         diagnose.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), DiagnoseActivity.class);
             startActivity(intent);
+
+            overridePendingTransition(0, 0);
+
         });
 
         camera.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
             startActivity(intent);
+            overridePendingTransition(0, 0);
+
         });
 
-
-        finish.setOnClickListener(v -> {
-            finishAndRemoveTask();
-        });
     }
 }

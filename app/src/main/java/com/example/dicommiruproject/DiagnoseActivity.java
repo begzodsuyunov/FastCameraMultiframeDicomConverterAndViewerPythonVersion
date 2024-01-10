@@ -253,4 +253,11 @@ public class DiagnoseActivity extends AppCompatActivity {
 //            seriesTimeTextView.setText("Series Time: " + seriesTime);
         }
     }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        // Remove the transition animation
+        overridePendingTransition(0, 0);
+    }
 }
